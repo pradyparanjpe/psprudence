@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: conf; -*-
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == '__main__':
+    def __repr__
+    @nb\.vectorize
+    @nb\.njit
+    @nb\.jit
+ignore_errors = True
+
+[run]
+omit =
+    */psprudence/__main__.py
+    */psprudence/command_input.py
+    */psprudence/errors.py
+    */psprudence/native_parallel.py
+source = psprudence
+
+[html]
+show_contexts = True

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Terminal=false
+Name=PSPrudence
+GenericName=System health monitor
+Exec=python3 -m psprudence
+Comment=Monitor peripherals and send signal for prudent action
+StartupNotify=false
+X-GNOME-Autostart-Delay=10

@@ -1,0 +1,13 @@
+include LICENSE
+include *.txt
+include *.rst
+include *.yml
+include *.desktop
+recursive-include tests *
+recursive-include docs *
+recursive-include psprudence *.yml
+recursive-include psprudence *.jpg
+recursive-exclude tests .coverage
+recursive-exclude tests .pytest_cache/**
+recursive-exclude docs _*/**
+recursive-exclude build *.pyc

@@ -1,0 +1,98 @@
+stages:
+- build
+- docs
+- prepare_release
+- release
+
+build:
+  stage: build
+  image: "python:3.7"
+  before_script:
+  - apt-get update
+  - apt-get -y install python3-dbus python3-psutil libdbus-1-dev
+  - python3 -m pip install -U wheel setuptools build
+  - python3 -m pip install -U argcomplete psprint
+  script:
+  - python3 -m pip install -U .
+
+pages:
+  image: "python:3.7"
+  stage: docs
+  before_script:
+  - export PATH="${PATH}:${HOME}/.local/bin"
+  - apt-get update
+  - apt-get -y install python3-dbus python3-psutil libdbus-1-dev
+  - python3 -m pip install -U sphinx
+  - python3 -m pip install -r docs/requirements.txt
+  - python3 -m pip install -U argcomplete psprint
+  - python3 -m pip install -U .
+  - mkdir -p public
+  script:
+  - sphinx-build -b html docs public
+  artifacts:
+    paths:
+    - public
+  only:
+    refs:
+    - release
+
+pypi:
+  image: "python:3.7"
+  stage: release
+  before_script:
+  - export PATH="${PATH}:${HOME}/.local/bin"
+  - apt-get update
+  - apt-get -y install python3-dbus python3-psutil libdbus-1-dev
+  - python3 -m pip install -U setuptools twine build
+  - rm -rf build dist
+  - python3 -m build
+  script:
+  - >
+      python -m twine upload
+      --username ${CI_REGISTRY_USER}
+      --password ${CI_JOB_TOKEN}
+      --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+      --skip-existing --non-interactive
+      dist/*
+  only:
+    refs:
+    - release
+
+prepare_job:
+  stage: prepare_release
+  script:
+  - >
+      echo
+      "TAG=v$(grep '__version__' psprudence/__init__.py
+      | cut -d\' -f2
+      | cut -d\" -f2)"
+      >> variables.env
+  artifacts:
+    reports:
+      dotenv: variables.env
+  only:
+    refs:
+    - release
+
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+  - job: prepare_job
+    artifacts: true
+  script:
+  - echo "running release_job for $TAG"
+  release:
+    name: 'Release $TAG'
+    description: './CHANGELOG.md'
+    tag_name: '$TAG'
+    ref: '$CI_COMMIT_SHA'
+    assets:
+      links:
+      - name: 'Gitlab pip repository'
+        url: '${CI_PROJECT_URL}'
+      - name: 'pip pypi repository'
+        url: 'https://https://pypi.org/project/${CI_PROJECT_NAME}/'
+  only:
+    refs:
+    - release
