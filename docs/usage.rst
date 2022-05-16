@@ -33,7 +33,7 @@ Create a file and place it at
       Type=Application
       Terminal=false
       Name=PSPrudence
-      GenericName=System health monitor
+      GenericName=System health notifier
       Exec=python3 -m psprudence
       Comment=Monitor peripherals and send signal for prudent action
       StartupNotify=false

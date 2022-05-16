@@ -24,7 +24,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-import dbus
+from notifypy import Notify
 
 from psprudence import print
 from psprudence.errors import CommandError
@@ -83,7 +83,7 @@ def process_comm(*cmd: str,
     return stdout or 'success'
 
 
-def notify(info: str = 'alert', timeout: float = 5) -> None:
+def notify(info: str = 'alert', timeout: Optional[float] = 5) -> None:
     """
     Notify alert
 
@@ -96,16 +96,14 @@ def notify(info: str = 'alert', timeout: float = 5) -> None:
         ``None``
 
     """
-    icon_p = Path(__file__).parent.joinpath('exclaim.jpg').resolve()
-    if not icon_p.is_file():
-        icon = ''
-    else:
-        icon = str(icon_p)
-    timeout *= 1000  # milliseconds
-    notify_interface = dbus.Interface(
-        object=dbus.SessionBus().get_object('org.freedesktop.Notifications',
-                                            '/org/freedesktop/Notifications'),
-        dbus_interface='org.freedesktop.Notifications')
-    notify_interface.Notify('PSPrudence', 0, str(icon), 'Alert(s)', info, [],
-                            {'urgency': 1}, int(timeout))
+    _timeout = timeout * 1000 if timeout else None
+    DEFAULT_NOTIFICATION = Notify(
+        default_notification_title='Alert',
+        default_notification_message=info,
+        default_notification_application_name='PSPrudence',
+        default_notification_icon=str(
+            Path(__file__).parent.joinpath('exclaim.jpg').resolve()),
+        timeout=_timeout)
+
+    DEFAULT_NOTIFICATION.send()
     return None

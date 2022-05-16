@@ -19,7 +19,9 @@
 #
 """Command-line EntryPoint"""
 
+import platform
 from os import environ
+from pathlib import Path
 from time import sleep
 from typing import Dict, Sequence
 
@@ -31,9 +33,15 @@ from psprudence.prudence import Prudence, create_alerts
 from psprudence.shell_comm import notify
 
 
-def read_configs():
-    """Combine configurations"""
-    configs = list(ConfDisc('psprudence', __file__).read_config().values())
+def read_configs(custom: Path = None):
+    """
+    Combine configurations
+
+    Args:
+        custom: custom configuration location
+    """
+    configs = list(
+        ConfDisc('psprudence', __file__).read_config(custom=custom).values())
     config = {}
     for vals in reversed(configs):
         for alert in vals:
@@ -46,7 +54,8 @@ def read_configs():
 
 def main_loop(interval: float = 0,
               disable: Sequence[str] = '',
-              debug: bool = False):
+              debug: bool = False,
+              custom: Path = None):
     """
     Main monitoring loop
 
@@ -54,12 +63,13 @@ def main_loop(interval: float = 0,
         interval: update interval
         disable: disable alerts
         debug: print debugging output
+        custom: custom configuration
     """
-    config = read_configs()
+    config = read_configs(custom)
 
+    persist: int = config.get('global', {'persist': 5})['persist']
     if not interval:
         interval = config.get('global', {'interval': 10.})['interval']
-    persist = config.get('global', {'persist': 5})['persist']
 
     # filter
     peripherals: Dict[str, Prudence] = {
@@ -93,7 +103,7 @@ def main_loop(interval: float = 0,
 
 def main():
     cliargs = cli()
-    if not environ.get('DISPLAY'):
+    if platform.system() == 'Linux' and not environ.get('DISPLAY'):
         print('PSPrudent needs graphical interface.', mark='err')
         return 1
     try:

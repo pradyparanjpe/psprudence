@@ -21,7 +21,7 @@ Install
    .. code-block:: sh
       :caption: install
 
-      pip install --index-url "https://www.gitlab.com/api/v4/projects/pradyparanjpe:psprudence/packages/pypi/simple" psprudence
+      pip install --index-url "https://www.gitlab.com/api/v4/projects/35710384/packages/pypi/simple" psprudence
 
 
 
@@ -30,7 +30,7 @@ Install
    .. code-block:: sh
       :caption: if ``command not found: pip``
 
-      python3 -m pip install --index-url "https://www.gitlab.com/api/v4/projects/pradyparanjpe:psprudence/packages/pypi/simple" psprudence
+      python3 -m pip install --index-url "https://www.gitlab.com/api/v4/projects/35710384/packages/pypi/simple" psprudence
 
 Update
 -------
@@ -40,7 +40,7 @@ Update
    .. code-block:: sh
       :caption: install
 
-      pip install -U --index-url "https://www.gitlab.com/api/v4/projects/pradyparanjpe:psprudence/packages/pypi/simple" psprudence
+      pip install -U --index-url "https://www.gitlab.com/api/v4/projects/35710384/packages/pypi/simple" psprudence
 
 
 .. tabbed:: module import
@@ -48,7 +48,7 @@ Update
    .. code-block:: sh
       :caption: if ``command not found: pip``
 
-      python3 -m pip install --index-url "https://www.gitlab.com/api/v4/projects/pradyparanjpe:psprudence/packages/pypi/simple" psprudence
+      python3 -m pip install --index-url "https://www.gitlab.com/api/v4/projects/35710384/packages/pypi/simple" psprudence
 
 
 Uninstall

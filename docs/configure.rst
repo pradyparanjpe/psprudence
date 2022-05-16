@@ -34,7 +34,7 @@ Example:
      # Special case
      global:
        interval: 10  # float: monitor every # seconds
-       persist: 5  # float: show alert for # seconds
+       persist: 5  # float: show alert for # seconds (0 => indefinitely)
 
      <alert name>:
        alert: <alert string>  # str

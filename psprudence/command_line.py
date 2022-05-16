@@ -55,6 +55,12 @@ def _cli() -> ArgumentParser:
                         nargs='*',
                         default=[],
                         help='disable monitoring peripherals')
+    parser.add_argument('-c',
+                        '--config',
+                        dest='custom',
+                        type=Path,
+                        default=None,
+                        help='custom configuration file path')
     parser.add_argument(
         '--version',
         action='version',

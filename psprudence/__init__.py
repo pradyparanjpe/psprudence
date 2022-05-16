@@ -21,7 +21,7 @@
 
 from psprint import print
 
-__version__ = "0!0.1.0"
+__version__ = "0!0.2.0"
 __name__ = 'psprudence'
 __copyright_years__ = '2022'
 __author__ = 'Pradyumna Paranjape'

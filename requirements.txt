@@ -1,5 +1,5 @@
 argcomplete
 psprint
 psutil >= 5.9.0
-dbus-python
+notify-py
 xdgpspconf
