@@ -31,11 +31,11 @@ an alert and optionally take a panic action [python function].
 
 .. |Pipeline| image:: https://gitlab.com/pradyparanjpe/psprudence/badges/master/pipeline.svg
 
-.. |source| image:: https://about.gitlab.com/images/press/logo/svg/gitlab-icon-rgb.svg
+.. |source| image:: https://about.gitlab.com/images/press/logo/svg/gitlab-logo-500.svg
    :width: 50
    :target: https://gitlab.com/pradyparanjpe/psprudence.git
 
-.. |pages| image:: https://about.gitlab.com/images/press/logo/svg/gitlab-logo-gray-stacked-rgb.svg
+.. |pages| image:: https://about.gitlab.com/images/press/logo/svg/gitlab-logo-200.svg
    :width: 50
    :target: https://pradyparanjpe.gitlab.io/psprudence
 

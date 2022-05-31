@@ -69,42 +69,63 @@ Uninstall
 
       python3 -m pip uninstall psprudence
 
+Initialize (Linux)
+======================
+
+Desktop Entry
+-----------------
+
+- Create a desktop entry.
+
+.. tabbed:: direct call
+
+   .. code-block:: shell
+      :caption: desktop entry
+
+         psprudence init
+
+.. tabbed:: module import
+
+   .. code-block:: shell
+      :caption: desktop entry
+
+         python -m psprudence init
 
 
+Autostart Background
+-----------------------
 
-`pspman <https://gitlab.com/pradyparanjpe/pspman>`__
-=====================================================
+- Create an autostart link.
 
-(Linux only)
+.. tabbed:: direct call
 
-For automated management: updates, etc
+   .. code-block:: shell
+      :caption: autostart entry
 
+         psprudence init -a
 
-Install
---------
+.. tabbed:: module import
 
-.. code-block:: sh
+   .. code-block:: shell
+      :caption: autostart entry
 
-   pspman -s -i https://gitlab.com/pradyparanjpe/psprudence.git
+         python -m psprudence init -a
 
+Remove desktop entries
+-------------------------
 
+- Create an autostart link.
 
-Update
--------
+.. tabbed:: direct call
 
-.. code-block:: sh
+   .. code-block:: shell
+      :caption: delete entries
 
-    pspman
+          psprudence init -d
 
+.. tabbed:: module import
 
-*That's all.*
+   .. code-block:: shell
+      :caption: delete entries
 
-
-Uninstall
-----------
-
-Remove installation:
-
-.. code-block:: sh
-
-    pspman -s -d psprudence
+         python -m psprudence init -d

@@ -29,6 +29,7 @@ from xdgpspconf import ConfDisc
 
 from psprudence import print
 from psprudence.command_line import cli
+from psprudence.initialize import initialize
 from psprudence.prudence import Prudence, create_alerts
 from psprudence.shell_comm import notify
 
@@ -101,12 +102,16 @@ def main_loop(interval: float = 0,
             notify('\n'.join(alert), timeout=persist)
 
 
-def main():
+def main() -> int:
     cliargs = cli()
+    if cliargs.get('call', 'monitor') == 'init':
+        return initialize(**cliargs)
     if platform.system() == 'Linux' and not environ.get('DISPLAY'):
         print('PSPrudent needs graphical interface.', mark='err')
         return 1
     try:
+        if 'call' in cliargs:
+            del cliargs['call']
         main_loop(**cliargs)
     except (KeyboardInterrupt, InterruptedError):
         return 0

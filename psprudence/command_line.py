@@ -41,6 +41,10 @@ def _cli() -> ArgumentParser:
     '''
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter,
                             description=description)
+    subparsers = parser.add_subparsers()
+    init = subparsers.add_parser(
+        'init',
+        help="Initialize an appropriate .desktop file (Only for Linux)")
     parser.add_argument('--debug',
                         action='store_true',
                         help='Print debugging output')
@@ -67,6 +71,17 @@ def _cli() -> ArgumentParser:
         version=f'%(prog)s ' + ' '.join(
             (__version__, 'form', str(Path(__file__).resolve().parent),
              f'(python {sys.version_info.major}.{sys.version_info.minor})')))
+    parser.set_defaults(call='main')
+
+    init.add_argument('-a',
+                      '--autostart',
+                      action='store_true',
+                      help='Make an autostart symlink.')
+    init.add_argument('-d',
+                      '--delete',
+                      action='store_true',
+                      help='Delete the desktop file.')
+    init.set_defaults(call='init')
 
     # python bash/zsh completion
     autocomplete(parser)

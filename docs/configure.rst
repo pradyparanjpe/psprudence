@@ -41,13 +41,13 @@ Example:
        units: <alert value units>  # str
        min_warn: <minimum value to start alerts>  # float
        res_warn: <alert every increment of>  # float
-       probe_cmd: py: /path/to/pyfile:pyprobe:arg1:arg2...  # returns value
-       probe_cmd: sh: /path/to/shell_script.sh  # prints value
-       probe_cmd: |
+       probe: py: /abs/path/to/pyfile:pyprobe:arg1:arg2...  # returns value
+       probe: sh: /abs/path/to/shell_script.sh  # prints value
+       probe: |
          <command line 1>
          <command line 2>
-         <command line n>  # returns value
+         <command line n>  # prints value
        # optional
-       panic: <panic callback on actionable values> # format same as probe_cmd
+       panic: <panic callback on actionable values> # format same as probe
        reversed: false <?panic in reverse (decreasing) direction>  # bool
        enabled: true <?this alert is enabled>  # bool
