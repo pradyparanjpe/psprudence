@@ -1,0 +1,3 @@
+[submodule "notifypy"]
+	url = https://github.com/ms7m/notify-py
+	path = psprudence/notifypy
