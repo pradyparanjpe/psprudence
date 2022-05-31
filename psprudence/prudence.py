@@ -38,7 +38,7 @@ class Prudence():
         res_warn: Warnings are recorded on this increment [default: 1]
         reverse: Direction of panic is reversed [default: False]
         enabled: This alert is enabled
-        probe_cmd:
+        probe:
             description:
                 probes the sensor.
             formats:
@@ -62,7 +62,7 @@ class Prudence():
                 function to be called if value is actionable.
 
             format:
-                same as `probe_cmd`'s format
+                same as `probe`'s format
 
             returns:
                all are ignored
@@ -70,60 +70,7 @@ class Prudence():
     """
 
     def __init__(self, alert: str, min_warn: float,
-                 probe_cmd: Union[Callable, str], **kwargs):
-
-        self.enabled: bool = kwargs.get('enabled', True)
-        """This alert is enabled"""
-
-        if isinstance(probe_cmd, Callable):
-            _probe = probe_cmd
-        else:
-            if probe_cmd[:4] == 'py: ':
-                _probe = self._custom_py(probe_cmd[4:])
-            else:
-                if probe_cmd[:4] == 'sh: ':
-                    shell_code = probe_cmd[4:]
-                else:
-                    shell_code = self._temp_code(probe_cmd)
-                _probe = lambda: process_comm(
-                    'sh', shell_code, fail_handle='report')
-
-        if _probe is None:
-            self.enabled = False
-            print("Couldn't parse probe_cmd to create a callable probe",
-                  mark='warn')
-            return
-
-        self.probe: Callable[[], Optional[Union[bool, float, str]]] = _probe
-        """
-        This callable is called to probe current value
-
-        Replace this method suitably
-
-        Returns:
-            probe failure ``None``
-            send an alert without value ``True``
-            do not sent alert ``False``
-        """
-
-        panic: Optional[Union[Callable[[], Any],
-                              str]] = kwargs.get('panic', None)
-        if panic is None:
-            self.panic: Optional[Callable[[], Any]] = None
-            """If value is actionable, callback"""
-        elif isinstance(panic, Callable):
-            self.panic = panic
-        else:
-            if panic[:4] == 'py: ':
-                self.panic = self._custom_py(panic[4:])
-            else:
-                if panic[:4] == 'sh: ':
-                    shell_code = panic[4:]
-                else:
-                    shell_code = self._temp_code(panic)
-                self.panic = lambda: process_comm(
-                    'sh', shell_code, fail_handle='report')
-
+                 probe: Union[Callable, str], **kwargs):
         self.alert: str = alert
         """Alert type string sent to notify"""
 
@@ -137,14 +84,78 @@ class Prudence():
         """Warnings are recorded on this increment"""
 
         self.reverse: bool = kwargs.get('reverse', False)
-        """Reversed direction of panic (alerts as value decreses)"""
+        """Reversed direction of panic (alerts as value decreases)"""
+
+        self.enabled: bool = kwargs.get('enabled', True)
+        """This alert is enabled"""
+
+        self._panic: Union[Callable[[], Any],
+                           str] = kwargs.get('panic', lambda: None)
+
+        self._probe: Union[Callable[[], Optional[Union[bool, float, str]]],
+                           str] = probe
 
         self._next_warn = self.min_warn
+
+    @property
+    def probe(self) -> Callable[[], Any]:
+        """
+        This callable is called to probe current value
+
+        Replace this method suitably
+
+        Returns:
+            probe failure ``None``
+            send an alert without value ``True``
+            do not sent alert ``False``
+        """
+        if isinstance(self._probe, Callable):
+            return self._probe
+        if self._probe[:4] == 'py: ':
+            self._probe = self._custom_py(self._probe[4:])
+        else:
+            if self._probe[:4] == 'sh: ':
+                # already a file
+                shell_code = self._probe[4:]
+            else:
+                # generate a panic temp-file
+                shell_code = self._temp_code(self._probe)
+            self._probe = lambda: process_comm(
+                'sh', shell_code, fail_handle='report')
+        return self._probe
+
+    @probe.setter
+    def probe(self, callback: Callable[[], Any]):
+        self._probe = callback
+
+    @property
+    def panic(self) -> Callable[[], Any]:
+        """Function called if value is actionable"""
+        # parse panic command
+        if isinstance(self._panic, Callable):
+            return self._panic
+        if self._panic[:4] == 'py: ':
+            self._panic = self._custom_py(self._panic[4:])
+        else:
+            if self._panic[:4] == 'sh: ':
+                # already a file
+                shell_code = self._panic[4:]
+            else:
+                # generate a panic temp-file
+                shell_code = self._temp_code(self._panic)
+            self._panic = lambda: process_comm(
+                'sh', shell_code, fail_handle='report')
+        return self._panic
+
+    @panic.setter
+    def panic(self, callback: Callable[[], Any]):
+        self._panic = callback
 
     def __repr__(self):
         kwargs = [
             f'{key}={getattr(self, key)}'
-            for key in ('alert', 'units', 'min_warn', 'res_warn')
+            for key in ('alert', 'units', 'min_warn', 'res_warn', 'reverse',
+                        'enabled', 'probe', 'panic')
         ]
         return (str(self.__class__) + '(' + ', '.join(kwargs) + ')')
 
@@ -162,7 +173,7 @@ class Prudence():
             Whether alert was notified
 
         """
-        if not (self.enabled or val):
+        if (not self.enabled) and (val is None):
             return
         if val is None:
             val = self.probe()
@@ -172,13 +183,11 @@ class Prudence():
             elif val is False:
                 return
             elif val is True:
-                if self.panic is not None:
-                    self.panic()
+                self.panic()
                 return f'</u>{self.alert}</u>: alert'
         val = float(val)
         if self.increment(val):
-            if self.panic is not None:
-                self.panic()
+            self.panic()
             return f'<b>{self.alert}</b>: {val: 0.2f}{self.units}'
         self.attempt_reset(val)
         return
@@ -196,13 +205,10 @@ class Prudence():
         with NamedTemporaryFile('w', delete=False) as shell_script:
             print(cmd, file=shell_script, disabled=True)
             temp_script = shell_script.name
-        print(temp_script)
         return temp_script
 
-    @staticmethod
-    def _custom_py(
-            pyexec: str
-    ) -> Optional[Callable[[], Optional[Union[bool, float]]]]:
+    def _custom_py(self,
+                   pyexec: str) -> Callable[[], Optional[Union[bool, float]]]:
         """Create a custom executable wrapper around supplied function"""
         pybase, pycall, *pyargs = pyexec.split(':')
         if '/' not in pybase:
@@ -210,7 +216,9 @@ class Prudence():
         pyfile = Path(pybase).with_suffix('.py').expanduser().resolve()
         if not (pyfile.is_file() or pyfile.with_suffix('.pyx').is_file()):
             # pyfile may be a pure python or compiled pyx (cython) module
-            return
+            print(f'Error creating py-callable for {self.alert}', mark='err')
+            print(f'No such python file ({pyfile}x?)', mark='err')
+            return lambda: None
         try:
             _locals = {}
             exec_code = [
@@ -219,8 +227,11 @@ class Prudence():
             ]
             exec('\n'.join(exec_code), globals(), _locals)
             call: Callable[..., Optional[Union[bool, float]]] = _locals['call']
-        except (FileNotFoundError, ModuleNotFoundError, ImportError):
-            return
+
+        except (FileNotFoundError, ModuleNotFoundError, ImportError) as err:
+            print(f'Error creating py-callable for {self.alert}', mark='err')
+            print(err)
+            return lambda: None
         return lambda: call(*pyargs)
 
     def increment(self, val: float) -> bool:
@@ -270,10 +281,8 @@ def create_alerts(config: Dict[str, Dict[str, Any]]) -> Dict[str, Prudence]:
     Returns:
         Callable prudence sensors
     """
-    alerts = {}
-    for name, kwargs in config.items():
-        if name != 'global':
-            sensor = Prudence(**kwargs)
-            if sensor.enabled:
-                alerts[name] = sensor
-    return alerts
+    return {
+        name: Prudence(**kwargs)
+        for name, kwargs in config.items()
+        if (name != 'global' and kwargs.get('enabled', True))
+    }

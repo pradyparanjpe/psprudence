@@ -24,9 +24,9 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+from notifypy import Notify
 from psprudence import print
 from psprudence.errors import CommandError
-from psprudence.notifypy.notifypy import Notify
 
 
 def process_comm(*cmd: str,
