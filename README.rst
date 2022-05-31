@@ -29,8 +29,6 @@ What does it do
 Monitor with extensible configurable sensors that notifies
 an alert and optionally take a panic action [python function].
 
-TODO: shell-script panic action.
-
 .. |Pipeline| image:: https://gitlab.com/pradyparanjpe/psprudence/badges/master/pipeline.svg
 
 .. |source| image:: https://about.gitlab.com/images/press/logo/svg/gitlab-icon-rgb.svg

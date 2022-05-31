@@ -96,14 +96,14 @@ def notify(info: str = 'alert', timeout: Optional[float] = 5) -> None:
         ``None``
 
     """
-    _timeout = timeout * 1000 if timeout else None
+
+    _timeout = timeout * 1000 if timeout else -1
     DEFAULT_NOTIFICATION = Notify(
         default_notification_title='Alert',
         default_notification_message=info,
         default_notification_application_name='PSPrudence',
         default_notification_icon=str(
             Path(__file__).parent.joinpath('exclaim.jpg').resolve()),
-        timeout=_timeout)
-
+        default_expiry=_timeout)
     DEFAULT_NOTIFICATION.send()
     return None
