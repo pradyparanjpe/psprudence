@@ -28,6 +28,15 @@ from notifypy import Notify
 from psprudence import print
 from psprudence.errors import CommandError
 
+DEFAULT_NOTIFICATION = Notify(
+    default_notification_title='Alert',
+    default_notification_message='',
+    default_notification_application_name='PSPrudence',
+    default_notification_icon=str(
+        Path(__file__).parent.joinpath('exclaim.jpg').resolve()),
+    default_expiry=-1)
+"""Default Notification."""
+
 
 def process_comm(*cmd: str,
                  timeout: int = None,
@@ -96,13 +105,11 @@ def notify(info: str = 'alert', timeout: Optional[float] = 5) -> None:
 
     """
 
-    _timeout = timeout * 1000 if timeout else -1
-    DEFAULT_NOTIFICATION = Notify(
-        default_notification_title='Alert',
-        default_notification_message=info,
-        default_notification_application_name='PSPrudence',
-        default_notification_icon=str(
-            Path(__file__).parent.joinpath('exclaim.jpg').resolve()),
-        default_expiry=_timeout)
+    # set
+    DEFAULT_NOTIFICATION.message = info
+    DEFAULT_NOTIFICATION.expiry = timeout * 1000 if timeout else -1
     DEFAULT_NOTIFICATION.send()
-    return None
+
+    # reset
+    DEFAULT_NOTIFICATION.message = 'alert'
+    DEFAULT_NOTIFICATION.expiry = -1
