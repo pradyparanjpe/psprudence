@@ -21,19 +21,18 @@
 
 import os
 import subprocess
-from pathlib import Path
 from typing import Optional
 
 from notifypy import Notify
-from psprudence import print
+
+from psprudence import print, project_root
 from psprudence.errors import CommandError
 
 DEFAULT_NOTIFICATION = Notify(
     default_notification_title='Alert',
     default_notification_message='',
     default_notification_application_name='PSPrudence',
-    default_notification_icon=str(
-        Path(__file__).parent.joinpath('exclaim.jpg').resolve()),
+    default_notification_icon=str(project_root.resolve() / 'data/exclaim.jpg'),
     default_expiry=-1)
 """Default Notification."""
 

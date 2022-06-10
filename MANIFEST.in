@@ -8,6 +8,8 @@ recursive-include docs *
 recursive-include psprudence *.yml
 recursive-include psprudence *.jpg
 recursive-include psprudence *.desktop
+recursive-include psprudence *.plist
+recursive-include psprudence *.service
 recursive-exclude tests .coverage
 recursive-exclude tests .pytest_cache/**
 recursive-exclude docs _*/**

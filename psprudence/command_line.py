@@ -35,16 +35,19 @@ def _cli() -> ArgumentParser:
     config_file = Path(__file__).parent / 'config.yml'
     description = '''
     Peripherial Signal Prudence:
-    Monitor peripherals and signal alert values for prudent action.
+
+    Monitor peripherals and
+    Signal alert values for
+    Prudent action.
+
     Configuration: "${XDG_CONFIG_HOME:-${HOME}/.config}/psprudence/config.yml"
     ''' + f'''Default: {config_file}
     '''
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter,
                             description=description)
     subparsers = parser.add_subparsers()
-    init = subparsers.add_parser(
-        'init',
-        help="Initialize an appropriate .desktop file (Only for Linux)")
+    init = subparsers.add_parser('init',
+                                 help='Set up psprudence as a service.')
     parser.add_argument('--debug',
                         action='store_true',
                         help='Print debugging output')
@@ -73,14 +76,23 @@ def _cli() -> ArgumentParser:
              f'(python {sys.version_info.major}.{sys.version_info.minor})')))
     parser.set_defaults(call='main')
 
-    init.add_argument('-a',
-                      '--autostart',
-                      action='store_true',
-                      help='Make an autostart symlink.')
+    init.add_argument(
+        '-g',
+        '--generate',
+        action='store_true',
+        help='Generate desktop and service files. INCOMPATIBLE with autostart.'
+    )
+
+    init.add_argument(
+        '-a',
+        '--autostart',
+        action='store_true',
+        help='Add to autostart. LINUX ONLY, INCOMPATIBLE with systemd service.'
+    )
     init.add_argument('-d',
                       '--delete',
                       action='store_true',
-                      help='Delete the desktop file.')
+                      help='Remove psprudence service and autostarts.')
     init.set_defaults(call='init')
 
     # python bash/zsh completion

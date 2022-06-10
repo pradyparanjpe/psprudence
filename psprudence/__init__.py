@@ -19,11 +19,15 @@
 #
 """Peripheral Signal Prudence"""
 
+from pathlib import Path
+
 from psprint import print
 
-__version__ = "0!0.2.2"
+__version__ = "0!0.2.3"
 __name__ = 'psprudence'
 __copyright_years__ = '2022'
 __author__ = 'Pradyumna Paranjape'
 
-__all__ = ['print']
+project_root: Path = Path(__file__).parent.resolve()
+
+__all__ = ['print', 'project_root']
