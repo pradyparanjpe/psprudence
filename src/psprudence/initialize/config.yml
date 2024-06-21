@@ -1,0 +1,51 @@
+global:
+  interval: 10
+  persist: 5
+
+# # remove "# " <hash and one space> from
+# # the beginning of block that you wish to disable
+
+# charge:
+#   enabled: false
+
+# discharge:
+#   enabled: false
+
+# cpu:
+#   enabled: false
+
+# load5:
+#   enabled: false
+
+# load15:
+#   enabled: false
+
+# memory:
+#   enabled: false
+
+# temperature:
+#   enabled: false
+
+
+
+# # remove "# " <hash and one space> from
+# # the beginning of following block to test an alert
+# # call triggered from an example custom shell function
+# test sh:
+#   alert: test sh func
+#   units: ''
+#   min_warn: -1
+#   warn_res: 0
+#   probe: 'sh: local_alerts.sh:test_sh'
+
+
+
+# # remove "# " <hash and one space> from
+# # the beginning of following block to test an alert
+# # call triggered from an example custom python function
+# test py:
+#   alert: test py func
+#   units: ''
+#   min_warn: -1
+#   warn_res: 0
+#   probe: 'py: local_alerts.py:test_py'

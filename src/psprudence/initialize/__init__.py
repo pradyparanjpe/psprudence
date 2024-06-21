@@ -22,40 +22,43 @@
 import platform
 
 from psprudence import print
+from psprudence.initialize.generic import OperatingPlatform
 from psprudence.initialize.linux import LinuxPlatform
 from psprudence.initialize.macos import MacPlatform
 from psprudence.initialize.windows import WindowsPlatform
 
 
-def init_call(**kwargs):
-    """
-    Initialize files for platforms
-    """
-    retcode = 0
-    os_system = platform.system()
-    if os_system == 'Linux':
-        current_platform = LinuxPlatform()
-    elif os_system == 'Darwin':
-        current_platform = MacPlatform()
-    elif os_system == 'Windows':
-        current_platform = WindowsPlatform()
-    else:
-        print(
-            'Only Linux, MacOS (Darwin) [and in future, Windows] are supported for init.',
-            mark='err')
+def _os_plat() -> OperatingPlatform:
+    """Discover and initialize a handle for the operating system platform."""
+    platform_h = {
+        'Linux': LinuxPlatform,
+        'Darwin': MacPlatform,
+        'Windows': WindowsPlatform
+    }.get(platform.system())
+    if platform_h is None:
+        print('Only Linux, MacOS (Darwin) and Windows are supported for init.',
+              mark='err')
         raise NotImplementedError
+    return platform_h()
 
+
+def init_call(**kwargs) -> int:
+    """Initialize /de-initialize auto-start and services"""
+    current_platform = _os_plat()
     if kwargs.get('delete'):
-        return current_platform.deinit()
+        return current_platform.init(revert=True)
 
-    if not current_platform.is_initialized():
-        retcode |= current_platform.generate()
-
+    retcode = 0
+    retcode |= current_platform.init()
     if kwargs.get('generate'):
         return retcode
 
     if kwargs.get('autostart'):
+        if kwargs.get('force'):
+            current_platform.enable_svc(revert=True)
         return retcode | current_platform.enable_autostart()
 
     # default action is to enable service
-    return retcode | current_platform.enable_service()
+    if kwargs.get('force') and isinstance(current_platform, LinuxPlatform):
+        current_platform.enable_autostart(revert=True)
+    return retcode | current_platform.enable_svc()

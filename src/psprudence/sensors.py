@@ -27,26 +27,28 @@ import psutil
 
 
 def cpu():
-    """CPU usage"""
+    """CPU usage."""
     return psutil.cpu_percent()
 
 
 def load(minutes: str = '1'):
     """
-    CPU load
+    CPU load.
 
-    Args:
-        minutes: minutes average [1, 5, 15]
+    Parameters
+    -----------
+    minutes : {1, 5, 15}
+        minutes average [1, 5, 15]
     """
     segment = {'1': 0, '5': 1, '15': 2}.get(str(minutes), 0)
     return psutil.getloadavg()[segment] * 100 / psutil.cpu_count()
 
 
 def temperature():
-    "Core temperature"
+    "Core temperature."
     return psutil.sensors_temperatures()['coretemp'][0].current
 
 
 def memory():
-    "RAM usage"
+    "RAM usage."
     return psutil.virtual_memory().percent

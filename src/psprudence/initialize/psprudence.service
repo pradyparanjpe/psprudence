@@ -1,6 +1,7 @@
 [Unit]
 Description=Monitor peripherals and send signal for prudent action
 Documentation=https://pradyparanjpe.gitlab.io/psprudence
+After=graphical-session.target
 
 [Service]
 Type=simple
@@ -8,4 +9,4 @@ Environment="PYTHONPATH=___pythonpath___"
 ExecStart=___python_exec___ -m psprudence
 
 [Install]
-WantedBy=graphical.target
+WantedBy=graphical-session.target

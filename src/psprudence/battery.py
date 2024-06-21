@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with psprudence. If not, see <https://www.gnu.org/licenses/>.
 #
-"""Battery Handles (special case)"""
+"""Battery Handles (special case)."""
 
 from typing import Optional, Union
 
@@ -27,7 +27,7 @@ from psprudence.shell_comm import notify, process_comm
 
 
 def charge() -> Optional[Union[int, bool]]:
-    """Probe function for battery"""
+    """Probe function for battery."""
     battery = psutil.sensors_battery()
     if battery is None:
         return None
@@ -37,7 +37,7 @@ def charge() -> Optional[Union[int, bool]]:
 
 
 def discharge() -> Optional[Union[int, bool]]:
-    """Probe function for battery"""
+    """Probe function for battery."""
     battery = psutil.sensors_battery()
     if battery is None:
         return None
@@ -50,11 +50,14 @@ def panic(suspend_at: str = '10'):
     """
     Battery Actions.
 
-    Args:
-        suspend_at: minutes remaining when computer should suspend
+    Parameters
+    ------------
+    suspend_at : str
+        minutes remaining when computer should suspend
 
-    Notifies:
-        ``notify`` emergency multiple times and suspends if critical
+    Notifies
+    ---------
+    ``notify`` emergency multiple times and suspends if critical
     """
     battery = psutil.sensors_battery()
     if battery is None:

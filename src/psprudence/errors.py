@@ -17,17 +17,39 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with psprudence. If not, see <https://www.gnu.org/licenses/>.
 #
-"""Peripheral Signal Prudence"""
+"""PSPrudence's defined errors"""
 
-from pathlib import Path
 
-from psprint import print
+class PSPrudenceError(Exception):
+    """Base error for psprudence(Exception)."""
 
-__version__ = "0!0.2.3"
-__name__ = 'psprudence'
-__copyright_years__ = '2022'
-__author__ = 'Pradyumna Paranjape'
+    def __init__(self, *args):
+        super(Exception, self).__init__(*args)
 
-project_root: Path = Path(__file__).parent.resolve()
 
-__all__ = ['print', 'project_root']
+class CommandError(PSPrudenceError):
+    """
+    Base class for subprocess failure.
+
+    Parameters
+    -----------
+        cmd : list
+            command passed to shell for execution
+        err : str
+            stderr received from shell after failure
+
+    """
+
+    def __init__(self, cmd: list, err: str = None) -> None:
+        super().__init__(
+            self, f"""
+        Command Passed for execution:
+        {cmd}
+
+        STDERR from command:
+        {err}
+        """)
+
+
+class CMDValueError(ValueError, PSPrudenceError):
+    """Bad command value."""

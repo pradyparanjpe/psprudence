@@ -17,13 +17,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with psprudence. If not, see <https://www.gnu.org/licenses/>.
 #
-"""Command-line EntryPoint"""
+"""Command-line EntryPoint."""
 
 import platform
 from os import environ
 from pathlib import Path
 from time import sleep
-from typing import Dict, Sequence
+from typing import Dict, Optional, Sequence
 
 from xdgpspconf import ConfDisc
 
@@ -34,12 +34,14 @@ from psprudence.prudence import Prudence, create_alerts
 from psprudence.shell_comm import notify
 
 
-def read_configs(custom: Path = None):
+def read_configs(custom: Optional[Path] = None):
     """
-    Combine configurations
+    Combine configurations.
 
-    Args:
-        custom: custom configuration location
+    Args
+    -----
+    custom : path, optional
+        Custom configuration location
     """
     configs = list(
         ConfDisc('psprudence', __file__).read_config(custom=custom).values())
@@ -56,15 +58,25 @@ def read_configs(custom: Path = None):
 def main_loop(interval: float = 0,
               disable: Sequence[str] = '',
               debug: bool = False,
-              custom: Path = None):
+              custom: Optional[Path] = None) -> int:
     """
     Main monitoring loop
 
-    Args:
-        interval: update interval
-        disable: disable alerts
-        debug: print debugging output
-        custom: custom configuration
+    Parameters
+    -----------
+    interval : float
+        Update interval
+    disable : Sequence[str]
+        disable alerts
+    debug : bool
+        print debugging output
+    custom : Path, optional
+        custom configuration
+
+    Returns
+    --------
+    int
+        exit code
     """
     config = read_configs(custom)
 
@@ -89,17 +101,23 @@ def main_loop(interval: float = 0,
               indent=1)
         print(f'interval: {interval}', mark='bug')
 
-    while True:
-        sleep(interval)
-        alert = []
-        for name, mon in peripherals.items():
-            mon_alert = mon()
-            if debug:
-                print(name, 'enabled' * mon.enabled, mon_alert, mark='bug')
-            if mon_alert is not None:
-                alert.append(mon_alert)
-        if alert:
-            notify('\n'.join(alert), timeout=persist)
+    try:
+        # It is bad to use a "while true loop"
+        # The following loop runs for almost 70 years if interval is 1 second
+        for _ in range(0x7fffffff):
+            alert = []
+            for name, mon in peripherals.items():
+                mon_alert = mon()
+                if debug:
+                    print(name, 'enabled' * mon.enabled, mon_alert, mark='bug')
+                if mon_alert is not None:
+                    alert.append(mon_alert)
+            if alert:
+                notify('\n'.join(alert), timeout=persist)
+            sleep(interval)
+    except (KeyboardInterrupt, InterruptedError):
+        print("Caught interrupt, quitting safely.", mark=1)
+        return 0
 
 
 def main() -> int:
@@ -109,12 +127,9 @@ def main() -> int:
     if platform.system() == 'Linux' and not environ.get('DISPLAY'):
         print('PSPrudent needs graphical interface.', mark='err')
         return 1
-    try:
-        if 'call' in cliargs:
-            del cliargs['call']
-        main_loop(**cliargs)
-    except (KeyboardInterrupt, InterruptedError):
-        return 0
+    if 'call' in cliargs:
+        del cliargs['call']
+    return main_loop(**cliargs)
 
 
 if __name__ == '__main__':

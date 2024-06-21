@@ -21,13 +21,13 @@ Badges
 Description
 ==============
 
-Monitor Peripherals and send signal for prudent action.
+Monitor Peripherals and send Signal for Prudent action.
 
 What does it do
 --------------------
 
-Monitor with extensible configurable sensors that notifies
-an alert and optionally take a panic action [python function].
+Monitors (extensible configurable) sensors
+and notifies an alert. Optionally takes an arbitrarily configurable panic action.
 
 .. |Pipeline| image:: https://gitlab.com/pradyparanjpe/psprudence/badges/master/pipeline.svg
 

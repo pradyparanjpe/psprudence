@@ -23,17 +23,14 @@ import os
 import subprocess
 from typing import Optional
 
-from notifypy import Notify
+from desktop_notifier import DesktopNotifier
 
 from psprudence import print, project_root
 from psprudence.errors import CommandError
 
-DEFAULT_NOTIFICATION = Notify(
-    default_notification_title='Alert',
-    default_notification_message='',
-    default_notification_application_name='PSPrudence',
-    default_notification_icon=str(project_root.resolve() / 'data/exclaim.jpg'),
-    default_expiry=-1)
+DEFAULT_NOTIFICATION = DesktopNotifier(app_name='PSPrudence',
+                                       app_icon=project_root.resolve() /
+                                       'data/exclaim.jpg')
 """Default Notification."""
 
 
@@ -47,22 +44,30 @@ def process_comm(*cmd: str,
     when the parent program is called with
     the environment variable ``DEBUG`` = ``True``
 
-    Args:
-        *cmd: list(cmd) is passed to subprocess.Popen as first argument
-        timeout: communicatoin timeout. If -1, 'communicate' isn't called
-        fail_handle: {fail,nag,report,ignore}
-            * fail: raises CommandError
-            * nag: Returns None, prints stderr
-            * report: returns None, but hides stderr
-            * ignore: returns stdout, despite error (default behaviour)
-        **kwargs: all are passed to ``subprocess.Popen``
+    Parameters
+    -----------
+    *cmd : str
+        ``list(cmd)`` is passed to :func:`subprocess.Popen` as first argument
+    timeout : int, optional
+        communicatoin timeout. If -1, the command is not communicated
+    fail_handle : {fail,nag,report,ignore}
+        - fail: raises CommandError
+        - nag: Returns None, prints stderr
+        - report: returns None, but hides stderr
+        - ignore: returns stdout, despite error (default behaviour)
+    **kwargs
+        all are passed to ``subprocess.Popen``
 
-    Returns:
+    Returns
+    --------
+    str
         stdout from command's communication
-        ``None`` if stderr with 'fail == False'
+    ``None``
+        if stderr with 'fail == False'
 
-    Raises:
-        CommandError
+    Raises
+    -------
+    CommandError
 
     """
     cmd_l = list(cmd)
@@ -92,23 +97,20 @@ def process_comm(*cmd: str,
 
 def notify(info: str = 'alert', timeout: Optional[float] = 5) -> None:
     """
-    Notify alert
+    Notify alert.
 
-    Args:
-        info: str = information to notify
-        timeout: int = remove notification after seconds. [0 => permament]
-        send_args: arguments passed to notify command
+    Parameters
+    -----------
+    info : str
+        Information to notify
+    timeout : int
+        Remove notification after seconds. [0 => permament]
 
-    Returns:
-        ``None``
+    Returns
+    --------
+    ``None``
 
     """
-
-    # set
-    DEFAULT_NOTIFICATION.message = info
-    DEFAULT_NOTIFICATION.expiry = timeout * 1000 if timeout else -1
-    DEFAULT_NOTIFICATION.send()
-
-    # reset
-    DEFAULT_NOTIFICATION.message = 'alert'
-    DEFAULT_NOTIFICATION.expiry = -1
+    DEFAULT_NOTIFICATION.send_sync(title='Alert',
+                                   message=info,
+                                   timeout=(timeout * 1000 if timeout else -1))

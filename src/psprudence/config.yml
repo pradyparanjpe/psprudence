@@ -12,14 +12,14 @@ charge:
   alert: Over Charging
   units: '%'
   min_warn: 90
-  res_warn: 2
+  warn_res: 2
   probe: 'py: battery:charge'
 
 discharge:
   alert: Discharging
   units: '%'
   min_warn: 20
-  res_warn: 1
+  warn_res: 1
   reverse: true
   probe: 'py: battery:discharge'
   panic: 'py: battery:panic:10'
@@ -28,33 +28,33 @@ cpu:
   alert: CPU
   units: '%'
   min_warn: 80
-  res_warn: 5
+  warn_res: 5
   probe: 'py: sensors:cpu'
 
 load5:
   alert: 5 min load
   units: '%'
   min_warn: 75
-  res_warn: 5
+  warn_res: 5
   probe: 'py: sensors:load:5'
 
 load15:
   alert: 15 min load
   units: '%'
   min_warn: 50
-  res_warn: 10
+  warn_res: 10
   probe: 'py: sensors:load:15'
 
 memory:
   alert: memory
   units: '%'
   min_warn: 60
-  res_warn: 10
+  warn_res: 10
   probe: 'py: sensors:memory'
 
 temperature:
   alert: Core Temperature
   units: '°C'
   min_warn: 75
-  res_warn: 5
+  warn_res: 5
   probe: 'py: sensors:temperature'

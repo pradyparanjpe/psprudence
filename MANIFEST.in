@@ -5,11 +5,12 @@ include *.yml
 include *.desktop
 recursive-include tests *
 recursive-include docs *
-recursive-include psprudence *.yml
-recursive-include psprudence *.jpg
-recursive-include psprudence *.desktop
-recursive-include psprudence *.plist
-recursive-include psprudence *.service
+recursive-include src *.desktop
+recursive-include src *.jpg
+recursive-include src *.plist
+recursive-include src *.service
+recursive-include src *.sh
+recursive-include src *.yml
 recursive-exclude tests .coverage
 recursive-exclude tests .pytest_cache/**
 recursive-exclude docs _*/**

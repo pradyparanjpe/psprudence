@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with psprudence. If not, see <https://www.gnu.org/licenses/>.
 #
-"""Command line inputs"""
+"""Command line inputs."""
 
 import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
@@ -25,13 +25,12 @@ from pathlib import Path
 
 from argcomplete import autocomplete
 
-from psprudence import __version__
+from psprudence.__about__ import __version__
+from psprudence.initialize.command_line import init_parser
 
 
 def _cli() -> ArgumentParser:
-    """
-    Parser for autodoc
-    """
+    """Parser for autodoc."""
     config_file = Path(__file__).parent / 'config.yml'
     description = '''
     Peripherial Signal Prudence:
@@ -46,8 +45,10 @@ def _cli() -> ArgumentParser:
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter,
                             description=description)
     subparsers = parser.add_subparsers()
-    init = subparsers.add_parser('init',
-                                 help='Set up psprudence as a service.')
+    subparsers.add_parser(name="init",
+                          help="Init PSPrudence: autostart and services",
+                          parents=[(init_parser())],
+                          add_help=False)
     parser.add_argument('--debug',
                         action='store_true',
                         help='Print debugging output')
@@ -55,19 +56,19 @@ def _cli() -> ArgumentParser:
                         '--interval',
                         type=float,
                         default=10,
-                        help='update interval in seconds')
+                        help='Update interval in seconds')
     parser.add_argument('-d',
                         '--disable',
                         type=str,
                         nargs='*',
                         default=[],
-                        help='disable monitoring peripherals')
+                        help='Disable monitoring peripherals')
     parser.add_argument('-c',
                         '--config',
                         dest='custom',
                         type=Path,
                         default=None,
-                        help='custom configuration file path')
+                        help='Custom configuration file path')
     parser.add_argument(
         '--version',
         action='version',
@@ -76,33 +77,12 @@ def _cli() -> ArgumentParser:
              f'(python {sys.version_info.major}.{sys.version_info.minor})')))
     parser.set_defaults(call='main')
 
-    init.add_argument(
-        '-g',
-        '--generate',
-        action='store_true',
-        help='Generate desktop and service files. INCOMPATIBLE with autostart.'
-    )
-
-    init.add_argument(
-        '-a',
-        '--autostart',
-        action='store_true',
-        help='Add to autostart. LINUX ONLY, INCOMPATIBLE with systemd service.'
-    )
-    init.add_argument('-d',
-                      '--delete',
-                      action='store_true',
-                      help='Remove psprudence service and autostarts.')
-    init.set_defaults(call='init')
-
     # python bash/zsh completion
     autocomplete(parser)
     return parser
 
 
 def cli() -> dict:
-    """
-    Command line arguments
-    """
+    """Command line arguments."""
     parser = _cli()
     return vars(parser.parse_args())

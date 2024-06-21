@@ -2,4 +2,4 @@ argcomplete
 psprint
 psutil >= 5.9.0
 xdgpspconf
-git+https://github.com/pradyparanjpe/notifypy
+desktop-notify

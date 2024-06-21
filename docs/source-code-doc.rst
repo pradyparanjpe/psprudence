@@ -48,6 +48,12 @@ prudence
 .. automodule:: psprudence.prudence
    :members:
 
+function builders
+----------------------
+
+.. automodule:: psprudence.build_meth
+   :members:
+
 sensors
 ----------
 
@@ -58,4 +64,34 @@ battery
 ----------
 
 .. automodule:: psprudence.battery
+   :members:
+
+**************
+Initialization
+**************
+
+Initialize PSPrudence for platform [Linux/MacOS/Windows]
+
+Generic
+========
+
+.. automodule:: psprudence.initialize.generic
+   :members:
+
+Linux
+========
+
+.. automodule:: psprudence.initialize.linux
+   :members:
+
+MacOS
+========
+
+.. automodule:: psprudence.initialize.macos
+   :members:
+
+Windows
+========
+
+.. automodule:: psprudence.initialize.windows
    :members:

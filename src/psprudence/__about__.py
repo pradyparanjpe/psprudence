@@ -17,36 +17,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with psprudence. If not, see <https://www.gnu.org/licenses/>.
 #
-"""PSPrudence's defined errors"""
+"""About Project"""
 
-
-class PSPrudenceError(Exception):
-    """Base error for psprudence(Exception):"""
-
-    def __init__(self, *args):
-        super(Exception, self).__init__(*args)
-
-
-class CommandError(PSPrudenceError):
-    """
-    Base class for subprocess failure
-
-    Args:
-        cmd: command passed to shell for execution
-        err: stderr received from shell after failure
-
-    """
-
-    def __init__(self, cmd: list, err: str = None) -> None:
-        super().__init__(
-            self, f"""
-        Command Passed for execution:
-        {cmd}
-
-        STDERR from command:
-        {err}
-        """)
-
-
-class CMDValueError(ValueError, PSPrudenceError):
-    """Bad command value"""
+__copyright_years__ = '2022-2024'
+__name__ = 'psprudence'
+__version__ = "0!0.3.0"
+__author__ = 'Pradyumna Paranjape'
